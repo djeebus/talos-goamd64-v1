@@ -41,6 +41,7 @@ jobs:
 
       - uses: ncipollo/release-action@v1
         with:
+          allowUpdates: true
           artifacts: "./talos.git/_out/*"
           body: "# v${{ inputs.version }}"
           commit: "main"
