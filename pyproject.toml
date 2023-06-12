@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["Joe Lombrozo <joe@djeebus.net>"]
 readme = "README.md"
-packages = [{include = "talos_goamd64_v1"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"

@@ -1,58 +1,45 @@
 import os.path
+import shutil
 import subprocess
 
 import click
 import requests
 
 session = requests.Session()
+session.headers = {
+    'X-GitHub-Api-Version': '2022-11-28',
+}
 
 
 @click.command
 @click.argument('version')
-def cli(version):
+@click.option('--repo-path', default='talos.git')
+def cli(version, repo_path):
     # validate that talos version actually exists
     if not _talos_version_exists(version):
         click.echo(f'talos v{version} does not exist')
         return exit(1)
 
-    # validate that version hasn't actually been build yet
-    if not _version_already_built(version):
-        click.echo(f'talos v{version} has already been built successfully')
-        return exit(1)
+    if os.path.exists(repo_path):
+        click.echo('wiping existing repo')
+        shutil.rmtree(repo_path)
 
-    # clone repo
-    _build(version)
+    click.echo('cloning talos repo')
+    subprocess.run(f'git clone --branch v{version} --depth 1 git@github.com:siderolabs/talos.git {repo_path}', check=True, shell=True)
 
-    # run build
-    _run_command('make kernel initramfs GOAMD64=v1')
+    click.echo(f'building {version} ... ')
+    subprocess.run('make talosctl kernel initramfs GOAMD64=v1', check=True, shell=True, cwd=repo_path)
 
 
 def _talos_version_exists(version):
-    with session.get('https://api.getihub.com/repos/siderolabs/talos') as r:
-        r.raise_for_status()
+    with session.get(f'https://api.github.com/repos/siderolabs/talos/releases/tags/v{version}') as r:
+        if r.status_code == 404:
+            return False
 
+        if r.status_code >= 400:
+            raise Exception(r.status_code, r.text)
 
-def _version_already_built(version):
-    raise NotImplementedError()
-
-
-repo_path = 'talos.git'
-
-
-def _build(version):
-    if os.path.exists(repo_path):
-        click.echo('wiping existing talos repo')
-        os.rmdir(repo_path)
-
-    click.echo('cloning talos repo')
-    subprocess.run(f'git clone --shallow {repo_path}', check=True, shell=True)
-
-    click.echo(f'building {version} ... ')
-    subprocess.run('make kernel initramfs GOAMD64=v1', check=True, shell=True)
-
-
-def _run_command(cmd):
-    raise NotImplementedError()
+    return True
 
 
 if __name__ == '__main__':

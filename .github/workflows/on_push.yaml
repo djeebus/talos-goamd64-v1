@@ -6,10 +6,14 @@ on:
       version:
         type: string
         required: true
+        description: Talos version
 
 jobs:
   build-release:
     runs-on: ubuntu-22.04
+
+    permissions:
+      contents: write
 
     steps:
       - name: checkout the source code
@@ -17,6 +21,19 @@ jobs:
 
       - uses: wistia/parse-tool-versions@v1.0
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '${{ env.PYTHON_TOOL_VERSION }}'
+
+      - uses: snok/install-poetry@v1
+        with:
+          version: "${{ env.POETRY_TOOL_VERSION }}"
+
       - run: |
           poetry install
-          poetry run build.py --version ${{ inputs.version }}
+          poetry run build.py ${{ inputs.version }} --repo-path ./talos.git
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: |
+            ./talos.git/_out/*            
