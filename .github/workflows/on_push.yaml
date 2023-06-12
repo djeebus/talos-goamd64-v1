@@ -25,7 +25,7 @@ jobs:
             --silent \
             --fail
           
-          git clone --branch v${{ inputs.version }} --depth 1 git@github.com:siderolabs/talos.git ./talos.git
+          git clone --branch v${{ inputs.version }} --depth 1 https://github.com/siderolabs/talos.git ./talos.git
           make talosctl kernel initramfs GOAMD64=v1
 
       - uses: actions/upload-artifact@v3
