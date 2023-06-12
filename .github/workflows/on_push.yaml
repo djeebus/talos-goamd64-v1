@@ -24,7 +24,9 @@ jobs:
           set -e
           
           # exit early if the version does not exist
-          curl https://api.github.com/repos/siderolabs/talos/releases/tags/v${{ inputs.version }}
+          curl https://api.github.com/repos/siderolabs/talos/releases/tags/v${{ inputs.version }} \
+            --silent \
+            --fail
           
           git clone --branch v${{ inputs.version }} --depth 1 git@github.com:siderolabs/talos.git ./talos.git
           make talosctl kernel initramfs GOAMD64=v1
