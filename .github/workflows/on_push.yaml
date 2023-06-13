@@ -54,22 +54,8 @@ jobs:
           replacesArtifacts: true
           tag: "${{ inputs.version }}"
 
-      - uses: docker/build-push-action@v4
-        with:
-          push: true
-          tags: djeebus/installer:v${{ inputs.version }}
-
-      - uses: docker/build-push-action@v4
-        with:
-          push: true
-          tags: djeebus/imager:v${{ inputs.version }}
-
-      - uses: docker/build-push-action@v4
-        with:
-          push: true
-          tags: djeebus/talos:v${{ inputs.version }}
-
-      - uses: docker/build-push-action@v4
-        with:
-          push: true
-          tags: djeebus/talosctl-image:v${{ inputs.version }}
+      - run: |
+          docker push ghcr.io/djeebus/installer:v${{ inputs.version }}
+          docker push ghcr.io/djeebus/imager:v${{ inputs.version }}
+          docker push ghcr.io/djeebus/talos:v${{ inputs.version }}
+          docker push ghcr.io/djeebus/talosctl-image:v${{ inputs.version }}
