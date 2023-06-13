@@ -17,8 +17,7 @@ jobs:
       packages: write
 
     steps:
-      - name: checkout the source code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - uses: docker/setup-buildx-action@v2
 
@@ -39,7 +38,7 @@ jobs:
             --fail
           
           git clone --branch v${{ inputs.version }} --depth 1 https://github.com/siderolabs/talos.git ./talos.git
-          cd ./talos.git && make all GOAMD64=v1 USERNAME=djeebus PUSH=true
+          cd ./talos.git && make all GOAMD64=v1 USERNAME=djeebus
 
       - uses: actions/upload-artifact@v3
         with:
@@ -54,3 +53,23 @@ jobs:
           commit: "main"
           replacesArtifacts: true
           tag: "${{ inputs.version }}"
+
+      - uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: djeebus/installer:v${{ inputs.version }}
+
+      - uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: djeebus/imager:v${{ inputs.version }}
+
+      - uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: djeebus/talos:v${{ inputs.version }}
+
+      - uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: djeebus/talosctl-image:v${{ inputs.version }}
