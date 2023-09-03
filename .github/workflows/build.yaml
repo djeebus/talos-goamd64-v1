@@ -24,18 +24,19 @@ jobs:
       - shell: bash
         run: |
           set -e
+          set -x
           
+          echo "logging into ghcr.io ... "
           echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io --username ${{ github.actor }} --password-stdin  
           
-          # exit early if the version does not exist
-          curl https://api.github.com/repos/siderolabs/talos/releases/tags/${{ inputs.version }} \
-            --output /dev/null \
-            --silent \
-            --fail
-          
+          echo "cloning git repo ... "
           git clone --branch v${{ inputs.version }} --depth 1 https://github.com/siderolabs/talos.git ./talos.git
           cd ./talos.git
+          
+          echo "building images ... "
           make installer imager talosctl-image talos GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus PUSH=true
+          
+          echo "building binaries ... "
           make initramfs kernel talosctl GOAMD64=v1
 
       - uses: ncipollo/release-action@v1
