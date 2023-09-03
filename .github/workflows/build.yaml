@@ -24,8 +24,16 @@ jobs:
       - shell: bash
         run: |
           set -e
-          set -x
           
+          # exit early if the version does not exist
+          if ! curl https://api.github.com/repos/siderolabs/talos/releases/tags/v${{ inputs.version }} \
+            --output /dev/null \
+            --silent \
+            --fail; then
+            echo "${{ inputs.version }} is not a valid talos release"
+            exit 1
+          fi
+
           echo "logging into ghcr.io ... "
           echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io --username ${{ github.actor }} --password-stdin  
           
