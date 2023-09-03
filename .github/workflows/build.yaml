@@ -16,6 +16,17 @@ jobs:
       contents: write
       packages: write
 
+    strategy:
+      matrix:
+        build:
+          - make installer GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus PUSH=true
+          - make imager GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus PUSH=true
+          - make talosctl-image GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus PUSH=true
+          - make talos GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus PUSH=true
+          - make initramfs kernel talosctl GOAMD64=v1
+          - make kernel talosctl GOAMD64=v1
+          - make talosctl GOAMD64=v1
+
     steps:
       - uses: actions/checkout@v3
 
@@ -41,11 +52,8 @@ jobs:
           git clone --branch v${{ inputs.version }} --depth 1 https://github.com/siderolabs/talos.git ./talos.git
           cd ./talos.git
           
-          echo "building images ... "
-          make installer imager talosctl-image talos GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus PUSH=true
-          
-          echo "building binaries ... "
-          make initramfs kernel talosctl GOAMD64=v1
+          echo "building ... "
+          ${{ matrix.build }}
 
       - uses: ncipollo/release-action@v1
         with:
