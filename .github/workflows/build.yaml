@@ -19,10 +19,10 @@ jobs:
     strategy:
       matrix:
         build:
-          - make installer GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus PUSH=true
-          - make imager GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus PUSH=true
-          - make talosctl-image GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus PUSH=true
-          - make talos GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus PUSH=true
+          - make installer GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus/talos PUSH=true
+          - make imager GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus/talos PUSH=true
+          - make talosctl-image GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus/talos PUSH=true
+          - make talos GOAMD64=v1 REGISTRY=ghcr.io USERNAME=djeebus/talos PUSH=true
           - make initramfs kernel talosctl GOAMD64=v1
           - make kernel talosctl GOAMD64=v1
           - make talosctl GOAMD64=v1
