@@ -37,7 +37,7 @@ jobs:
           set -e
           
           # exit early if the version does not exist
-          if ! curl https://api.github.com/repos/siderolabs/talos/releases/tags/v${{ inputs.version }} \
+          if ! curl https://api.github.com/repos/djeebus/talos/branches/forked-${{ inputs.version }} \
             --output /dev/null \
             --silent \
             --fail; then
@@ -49,7 +49,7 @@ jobs:
           echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io --username ${{ github.actor }} --password-stdin  
           
           echo "cloning git repo ... "
-          git clone --branch v${{ inputs.version }} --depth 1 https://github.com/siderolabs/talos.git ./talos.git
+          git clone --branch forked-${{ inputs.version }} --depth 1 https://github.com/siderolabs/talos.git ./talos.git
           cd ./talos.git
           
           echo "building ... "
